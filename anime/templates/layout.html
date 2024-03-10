@@ -1,0 +1,254 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Anime Database{% endblock %}</title>
+    <!-- Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+
+
+    <div class="container">
+        <h1 class="text-center my-5">The Anime Database</h1>
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="/">Anime Database</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <form id="searchForm" class="form-inline ml-auto" action="/search" method="get">
+                    <select id="sortSelect" class="form-control mr-2" name="sort">
+                        <option value="" selected>Sort By</option>
+                        <option value="ascending_alpha">Ascending Alphabetical</option>
+                        <option value="descending_alpha">Descending Alphabetical</option>
+                        <option value="popular_first">Less Popular First</option>
+                        <option value="least_popular_first">More Popular First</option>
+                        <option value="more_episodes_first">More Episodes First</option>
+                        <option value="less_episodes_first">Less Episodes First</option>
+                        <option value="popularity_first">Popular First</option>
+                        <option value="least_popularity_first">Less Popular First</option>
+                        <option value="score_first">High Rating First</option>
+                        <option value="least_score_first">Low Rating First</option>
+                        <option value="air_time">New First</option>
+                        <option value="least_air_time">Old First</option>
+                    </select>
+                    <input id="searchfield" class="form-control mr-2" type="search" placeholder="Search Anime"
+                        name="query" aria-label="Search">
+
+                </form>
+                <button id="submitbtn" class="btn btn-outline-success my-2 my-sm-0"
+                    onclick="submitSearchForm()">Search</button>
+            </div>
+        </nav>
+
+        <div class="accordion mt-3" id="genreAccordion">
+            <div class="card">
+                <div class="card-header bg-dark" id="genreHeading">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link text-white" type="button" data-toggle="collapse"
+                            data-target="#genreCollapse" aria-expanded="true" aria-controls="genreCollapse">
+                            Genre Filter
+                        </button>
+                    </h5>
+                </div>
+
+                <div id="genreCollapse" class="collapse" aria-labelledby="genreHeading" data-parent="#genreAccordion">
+                    <div class="card-body bg-dark">
+                        <div class="container">
+                            <div class="row justify-content-start" style="justify-content: space-between;">
+                                {% for genre in genres %}
+                                <div class="col-6 col-sm-4 col-md-3 col-lg-2 col-xl-1 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="{{ genre }}"
+                                            id="genre{{ genre }}">
+                                        <label class="form-check-label ml-2" for="genre{{ genre }}">
+                                            <div>{{ genre }}</div>
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="container">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        <!-- Footer -->
+        <!-- Footer -->
+        <footer class="footer mt-auto py-3 bg-dark">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h5 class="text-white mb-3">Genres</h5>
+                    </div>
+                    {% for genre in genres %}
+                    <div class="col-lg-2 col-md-4 col-sm-6">
+                        <a class="text-muted" href="/genre?genre={{ genre }}">{{ genre }}</a>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="row mt-4">
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        <h5 class="text-white">CS50 Final Project</h5>
+                        <ul class="list-unstyled">
+                            <li><a class="text-muted" href="https://github.com/realskull/the_anime_database">Source Code</a></li>
+                            <li><a class="text-muted" href="/about">About</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        <h5 class="text-white">Connect with me!</h5>
+                        <ul class="list-unstyled">
+                            <li><a class="text-muted" href="https://www.linkedin.com/in/utkrist-karki-aa6a15252/">LinkedIn</a></li>
+                            <li><a class="text-muted" href="https://discord.com/users/407738064723640326">Discord</a></li>
+                            <li><a class="text-muted" href="mailto:utkristkarki01@gmail.com">Email</a></li>
+                            <li><a class="text-muted" href="https://twitter.com/utkrist_karki">Twitter</a></li>
+                            <li><a class="text-muted" href="https://www.youtube.com/@FeverDev64">YouTube</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12">
+                        <p class="text-muted">All data sourced from My Anime List (2020), <a class="text-muted"
+                                href="https://github.com/cckuqui/anime-db/blob/master/datasets/myanimelist.csv"> CSV
+                                (myanimellist.csv) </a>
+                            Anime releases newer than 2020 are not included in this old database.
+                            Any information included here may not be 100% accurate.
+                        </p>
+
+                        <p class="text-muted"><a class="text-muted" href="#">Utkrist Karki - CS50x 2024</a>. All
+                            rights
+                            reserved. Licensed under the
+                            MIT License. </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+
+
+        <!-- Bootstrap JS scripts -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+        <script>
+            function submitSearchForm() {
+                // Get the selected genres
+                var selectedGenres = [];
+                var checkboxes = document.querySelectorAll('input[type=checkbox]:checked');
+                checkboxes.forEach(function (checkbox) {
+                    if (checkbox.id.startsWith('genre')) {
+                        selectedGenres.push(checkbox.value);
+                    }
+                });
+
+                // Get the selected filters
+                var selectedFilter = document.getElementById('sortSelect').value;
+
+                // Get the form element
+                var form = document.getElementById('searchForm');
+
+                // Get the query input value
+                var query = document.getElementById('searchfield').value;
+
+                // Construct the genre query parameter
+                var genreQuery = '';
+                if (selectedGenres.length > 0) {
+                    genreQuery = '&genres=' + selectedGenres.join(',');
+                }
+
+                // Construct the filter query parameter
+                var filterQuery = '';
+                if (selectedFilter) {
+                    filterQuery = '&filter=' + selectedFilter;
+                }
+
+                // Construct the final query string
+                var queryString = '?query=' + query + genreQuery + filterQuery;
+
+                // Redirect to the search URL with query parameters
+                window.location.href = form.getAttribute('action') + queryString;
+            }
+
+            // Function to parse URL parameters
+            function parseURLParams(url) {
+                var queryStart = url.indexOf("?") + 1,
+                    queryEnd = url.indexOf("#") + 1 || url.length + 1,
+                    query = url.slice(queryStart, queryEnd - 1),
+                    pairs = query.replace(/\+/g, " ").split("&"),
+                    parms = {}, i, n, v, nv;
+
+                if (query === url || query === "") return;
+
+                for (i = 0; i < pairs.length; i++) {
+                    nv = pairs[i].split("=", 2);
+                    n = decodeURIComponent(nv[0]);
+                    v = decodeURIComponent(nv[1]);
+
+                    if (!parms.hasOwnProperty(n)) parms[n] = [];
+                    parms[n].push(nv.length === 2 ? v : null);
+                }
+                return parms;
+            }
+
+            // Function to populate fields with URL parameters
+            function populateFieldsFromURLParams() {
+                // Get current URL
+                var url = window.location.href;
+
+                // Parse URL parameters
+                var params = parseURLParams(url);
+
+                console.log(params)
+
+                // Populate search query field
+                if (params.hasOwnProperty('query')) {
+                    document.getElementById('searchfield').value = params['query'][0];
+                }
+
+                // Populate genres checkboxes
+                if (params.hasOwnProperty('genres')) {
+                    var selectedGenres = params['genres'][0].split(',');
+                    selectedGenres.forEach(function (genre) {
+                        document.getElementById('genre' + genre).checked = true;
+                    });
+                }
+
+                // Populate filter dropdown
+                if (params.hasOwnProperty('filter')) {
+                    var selectedFilter = params['filter'][0];
+                    document.getElementById('sortSelect').value = selectedFilter;
+                }
+            }
+
+            // Call populateFieldsFromURLParams function when the page loads
+            window.onload = function () {
+                populateFieldsFromURLParams();
+            };
+
+
+        </script>
+
+
+
+        {% block endbody %}
+        {% endblock %}
+</body>
+
+</html>

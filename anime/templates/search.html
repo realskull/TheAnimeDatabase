@@ -1,0 +1,146 @@
+{% extends 'layout.html' %}
+
+{% block title %}Search Results - The Anime Database{% endblock %}
+
+{% block content %}
+
+<div class="section">
+    <hr>
+    <h2 class="text-center">Showing results for {{search_query}} ({{ count }})</h2>
+    <div class="rowwrap">
+        {% for anime in anime_list %}
+        <div class="col-md-2 fadeInUp">
+            <a href="/anime?uid={{ anime.uid }}" class="btn btn-link anime-card">
+                <div class="image-container"> <!-- Add a container for the image -->
+                    <img src="{{ anime.img_url }}" alt="" class="img-fluid">
+                </div>
+                <p class="text-center">{{ anime.title }}</p>
+                <p class="text-center anime-card"> {{ anime.star_html | safe }} ({{ anime.score}}) </p>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<button id="moreResultsBtn" class="more-btn" onclick="handlePagination('next')">More Results</button>
+
+{% endblock %}
+
+{% block endbody %}
+<script>
+    // Get the URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // Get the value of the 'query' parameter
+    const searchQuery = urlParams.get('query');
+
+    // Now you have the query value, you can use it as needed in your JavaScript code
+    let currentPage = 1;
+
+    // Function to fetch anime by query for the current page
+    async function fetchAnimeByQuery(page) {
+
+        const selectedFilter = document.getElementById('sortSelect').value;
+
+        var selectedGenres = [];
+        var checkboxes = document.querySelectorAll('input[type=checkbox]:checked');
+        checkboxes.forEach(function (checkbox) {
+            if (checkbox.id.startsWith('genre')) {
+                selectedGenres.push(checkbox.value);
+            }
+        });
+
+        const query = document.getElementById('searchfield').value;
+
+        // Construct the genre query parameter
+        var genreQuery = '';
+        if (selectedGenres.length > 0) {
+            genreQuery = '&genres=' + selectedGenres.join(',');
+        }
+
+        // Construct the filter query parameter
+        var filterQuery = '';
+        if (selectedFilter) {
+            filterQuery = '&filter=' + selectedFilter;
+        }
+
+        // Construct the final query string
+        var queryString = '?query=' + query + genreQuery + filterQuery;
+
+        const response = await fetch('/fetch_results'+queryString+'&page='+page);
+        const data = await response.json();
+
+        if (data.message == 'ok') {
+            if (data.anime_results) {
+                if (data.anime_results.length > 0) {
+                    if (data.message == 'end') {
+                        document.querySelector("#moreResultsBtn").style.display = "none";
+                    }
+                    return data.anime_results;
+                } else {
+                    console.log("No anime results found for the given query.");
+                }
+            } else {
+                console.log("Anime results not found in the response.");
+            }
+        } else {
+            console.log("Error occurred while fetching anime results.");
+        }
+        document.querySelector("#moreResultsBtn").style.display = "none";
+        return [];
+
+    }
+
+    function displayAnimeByQuery(animeByQuery) {
+        const genreSection = document.getElementsByClassName('section')[0]; // Access the first element with class 'section'
+
+        const rowWrap = document.createElement('div');
+        rowWrap.classList.add('rowwrap');
+
+        animeByQuery.forEach(anime => {
+            const colDiv = document.createElement('div');
+            colDiv.classList.add('col-md-2', 'fadeInUp');
+
+            const animeLink = document.createElement('a');
+            animeLink.href = `/anime?uid=${anime.uid}`;
+            animeLink.classList.add('btn', 'btn-link', 'anime-card');
+
+            const animeImage = document.createElement('img');
+            animeImage.src = anime.img_url;
+            animeImage.classList.add('img-fluid');
+
+            const titleParagraph = document.createElement('p');
+            titleParagraph.classList.add('text-center');
+            titleParagraph.textContent = anime.title;
+
+            const ratingParagraph = document.createElement('p');
+            ratingParagraph.classList.add('text-center', 'anime-card');
+            ratingParagraph.innerHTML = `${anime.star_html} (${anime.score})`;
+
+            animeLink.appendChild(animeImage);
+            animeLink.appendChild(titleParagraph);
+            animeLink.appendChild(ratingParagraph);
+
+            colDiv.appendChild(animeLink);
+            rowWrap.appendChild(colDiv);
+        });
+
+        genreSection.appendChild(rowWrap);
+    }
+
+
+    // Function to handle pagination
+    async function handlePagination(direction) {
+        if (direction === 'prev' && currentPage > 1) {
+            currentPage--;
+        } else if (direction === 'next') {
+            currentPage++;
+        }
+
+        const animeByQuery = await fetchAnimeByQuery(currentPage);
+        displayAnimeByQuery(animeByQuery);
+    }
+
+
+</script>
+{% endblock %}

@@ -1,0 +1,182 @@
+{% extends 'layout.html' %}
+
+{% block title %}The Anime Database{% endblock %}
+
+{% block content %}
+<!-- Top Anime Section -->
+<div class="section">
+    <hr>
+    <h2 class="text-center">Top Anime</h2>
+    <div class="row">
+        {% for anime in top_anime %}
+        <div class="col-md-2 fadeInUp">
+            <a href="/anime?uid={{ anime.uid }}" class="btn btn-link anime-card">
+                <div class="img-container"> <!-- Added a container for the image -->
+                    <img src="{{ anime.img_url }}" alt="" class="img-fluid">
+                </div>
+                <p class="text-center">{{ anime.title }}</p>
+                <p class="text-center anime-card"> {{ anime.star_html | safe }} ({{ anime.score}}) </p>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Worst Anime Section -->
+<div class="section">
+    <hr>
+    <h2 class="text-center">Worst Anime</h2>
+    <div class="row">
+        {% for anime in worst_anime %}
+        <div class="col-md-2 fadeInUp">
+            <a href="/anime?uid={{ anime.uid }}" class="btn btn-link anime-card">
+                <img src="{{ anime.img_url }}" alt="" class="img-fluid">
+                <p class="text-center">{{ anime.title }}</p>
+                <p class="text-center anime-card"> {{ anime.star_html | safe }} ({{ anime.score}}) </p>
+                <!-- Add stars here -->
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+<!-- Genre Sections -->
+<div id="genreSections" class="section">
+    <!-- Genre sections will be dynamically added here -->
+</div>
+
+<!-- Add a button to fetch more genres -->
+<button id="moreGenresBtn" class="more-btn"  onclick="handlePagination('next')">More Genres</button>
+
+
+{% endblock %}
+
+{% block endbody %}
+<script>
+    const sections = document.querySelectorAll('.section');
+
+    sections.forEach(section => {
+        const row = section.querySelector('.row');
+        const slideStep = 180; // Width of each card including margin
+        const slideButtonLeft = document.createElement('button');
+        const slideButtonRight = document.createElement('button');
+
+        slideButtonRight.classList.add('scroll-btn', 'right-btn');
+        slideButtonLeft.classList.add('scroll-btn', 'left-btn');
+
+        slideButtonLeft.innerHTML = '&#8249;'; // Left arrow character
+        slideButtonRight.innerHTML = '&#8250;'; // Right arrow character
+
+        section.appendChild(slideButtonLeft);
+        section.appendChild(slideButtonRight);
+
+        slideButtonLeft.addEventListener('click', function () {
+            row.scrollBy({
+                top: 0,
+                left: -slideStep,
+                behavior: 'smooth'
+            });
+        });
+
+        slideButtonRight.addEventListener('click', function () {
+            row.scrollBy({
+                top: 0,
+                left: slideStep,
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    let currentPage = 1;
+
+    // Function to fetch anime by genre for the current page
+    async function fetchAnimeByGenre(page) {
+        const response = await fetch(`/fetch-genres?page=${page}`);
+        const data = await response.json();
+
+        if (data.message == 'end') {
+            document.querySelector("#moreGenresBtn").style.display = "none";
+        }
+        return data.anime_by_genre;
+    }
+
+    // Function to display anime by genre
+    function displayAnimeByGenre(animeByGenre) {
+        const genreSectionsContainer = document.getElementById('genreSections');
+
+        for (const [genre, animeList] of Object.entries(animeByGenre)) {
+            const genreSection = document.createElement('div');
+            genreSection.classList.add('section');
+            genreSection.innerHTML = `
+            <h2 class="text-center "> <a href="/genre?genre=${genre}"> ${genre} </a> </h2>
+            <div class="row">
+                ${animeList.map(anime => `
+                    <div class="col-md-2 fadeInUp">
+                        <a href="/anime?uid=${anime.uid}" class="btn btn-link anime-card">
+                            <img src="${anime.img_url}" alt="" class="img-fluid">
+                            <p class="text-center">${anime.title}</p>
+                            <p class="text-center anime-card">${anime.star_html} ${(anime.score)}</p>
+                            <!-- Add stars here -->
+                        </a>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+            genreSectionsContainer.appendChild(genreSection);
+
+            const section = genreSection;
+            const row = section.querySelector('.row');
+            const slideStep = 180; // Width of each card including margin
+            const slideButtonLeft = document.createElement('button');
+            const slideButtonRight = document.createElement('button');
+
+            slideButtonRight.classList.add('scroll-btn', 'right-btn');
+            slideButtonLeft.classList.add('scroll-btn', 'left-btn');
+
+            slideButtonLeft.innerHTML = '&#8249;'; // Left arrow character
+            slideButtonRight.innerHTML = '&#8250;'; // Right arrow character
+
+            section.appendChild(slideButtonLeft);
+            section.appendChild(slideButtonRight);
+
+            slideButtonLeft.addEventListener('click', function () {
+                row.scrollBy({
+                    top: 0,
+                    left: -slideStep,
+                    behavior: 'smooth'
+                });
+            });
+
+            slideButtonRight.addEventListener('click', function () {
+                row.scrollBy({
+                    top: 0,
+                    left: slideStep,
+                    behavior: 'smooth'
+                });
+            });
+        }
+    }
+
+
+    // Function to handle pagination
+    async function handlePagination(direction) {
+        if (direction === 'prev' && currentPage > 1) {
+            currentPage--;
+        } else if (direction === 'next') {
+            currentPage++;
+        }
+
+        const animeByGenre = await fetchAnimeByGenre(currentPage);
+        displayAnimeByGenre(animeByGenre);
+    }
+
+    // Initial fetch and display
+    window.onload = async function () {
+        const animeByGenre = await fetchAnimeByGenre(currentPage);
+        displayAnimeByGenre(animeByGenre);
+    };
+
+</script>
+{% endblock %}

@@ -1,0 +1,220 @@
+/* Fancy animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.fadeInUp {
+    animation-name: fadeInUp;
+    animation-duration: 1s;
+}
+
+.slideInLeft {
+    animation-name: slideInLeft;
+    animation-duration: 1s;
+}
+
+.slideInRight {
+    animation-name: slideInRight;
+    animation-duration: 1s;
+}
+
+/* Hover effects */
+.section .col-md-2 {
+    transition: transform 0.3s ease;
+}
+
+.section .col-md-2:hover {
+    transform: translateY(-10px);
+    box-shadow: 0px 4px 6px rgba(255, 255, 255, 0.1);
+}
+
+/* Cards sliding */
+.section .row {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+/* Additional styling */
+body {
+    background-color: #1f1f1f; /* Dark background */
+    color: #f3f3f3; /* Light text color */
+    font-family: Arial, sans-serif; /* Better font */
+}
+
+.container {
+    max-width: 1200px; /* Limit container width */
+    margin: auto; /* Center content */
+}
+
+.navbar {
+    background-color: #333; /* Dark navbar background */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Navbar shadow */
+}
+
+.section {
+    position: relative;
+    overflow: hidden;
+    background-color: #1f1f1f; /* Dark background */
+}
+
+.scroll-container {
+    position: relative;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 20px; /* Add space for buttons */
+    border-radius: 50%;
+}
+
+.scroll-btn {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    width: 50px;
+    height: 50px;
+    background-color: #4caf50; /* Green color */
+    border: none;
+    border-radius: 50%;
+}
+
+.left-btn {
+    left: 0;
+}
+
+.right-btn {
+    right: 0;
+}
+
+.section h2 {
+    margin-bottom: 20px; /* Add space below section headers */
+    font-size: 24px; /* Larger font size for section headers */
+    color: #f3f3f3; /* Light text color */
+}
+
+.section .row {
+    margin-top: 20px; /* Add space above row */
+    margin-left: 25px;
+    margin-right: 50px;
+    display: flex; /* Use flexbox layout */
+    flex-wrap: nowrap; /* Allow wrapping of cards */
+    overflow-x: hidden; /* Hide horizontal overflow */
+    white-space: nowrap;
+    width: calc(100% + 20px); /* Add extra space for cards to slide */
+}
+
+.section .rowwrap {
+    margin-top: 20px; /* Add space above row */
+    margin-left: 25px;
+    margin-right: 50px;
+    display: flex; /* Use flexbox layout */
+    flex-wrap: wrap; /* Allow wrapping of cards */
+    overflow-x: hidden; /* Hide horizontal overflow */
+    white-space: nowrap;
+    width: calc(100% + 20px); /* Add extra space for cards to slide */
+}
+
+.section .col-md-2 {
+    padding: 10px; /* Add padding inside columns */
+    border-radius: 8px; /* Rounded corners for cards */
+    background-color: #333; /* Dark background for cards */
+    box-shadow: 0px 4px 6px rgba(255, 255, 255, 0.1); /* Card shadow */
+    margin-right: 10px; /* Add space between cards */
+    margin-bottom: 20px; /* Add space between rows */
+    flex: 0 0 auto; /* Prevent flex items from growing or shrinking */
+    min-width: 200px; /* Set minimum width for cards */
+    max-width: 200px; /* Set maximum width for cards */
+    display: inline-block; /* Display cards inline */
+    width: 160px; /* Set a fixed width for each card */
+    margin-right: 20px; /* Add margin between cards */
+}
+
+.section .col-md-2 img {
+    width: 100%; /* Make images fill the entire column */
+    border-radius: 8px; /* Rounded corners for images */
+    max-height: 200px; /* Limit image height */
+    object-fit: cover; /* Ensure images maintain aspect ratio */
+}
+
+.section .col-md-2 p {
+    margin-top: 10px; /* Add space above title */
+    font-size: 14px; /* Smaller font size for titles */
+    text-align: center; /* Center-align titles */
+    color: #f3f3f3; /* Light text color */
+    white-space: normal; /* Allow title to wrap */
+    overflow: hidden; /* Hide overflow text */
+    text-overflow: ellipsis; /* Show ellipsis for overflow text */
+}
+
+.anime-card {
+    text-decoration: none; /* Remove underline */
+    color: inherit; /* Inherit text color from parent */
+    /* Add any additional styles here */
+}
+
+.anime-card,
+.anime-card:hover,
+.anime-card:focus,
+.anime-card:active {
+    text-decoration: none !important;
+    color: inherit !important;
+    /* Add any additional styles here */
+}
+
+.table td {
+    color: #fff; /* Bright color */
+}
+
+.more-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40%; /* Adjust width as needed */
+    height: 50px; /* Adjust height as needed */
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    margin-left: 30%;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Add shadow */
+  }
+  
+  .more-btn:hover {
+    background-color: #45a049; /* Darker green */
+  }
+  

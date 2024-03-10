@@ -1,0 +1,124 @@
+{% extends 'layout.html' %}
+
+{% block title %}The Anime Database{% endblock %}
+
+{% block content %}
+
+<div class="section">
+    <hr>
+    <h2 class="text-center">{{genre}} ({{ genre_count }})</h2>
+    <div class="rowwrap">
+        {% for anime in anime_list %}
+        <div class="col-md-2 fadeInUp">
+            <a href="/anime?uid={{ anime.uid }}" class="btn btn-link anime-card">
+                <img src="{{ anime.img_url }}" alt="" class="img-fluid">
+                <p class="text-center">{{ anime.title }}</p>
+                <p class="text-center anime-card"> {{ anime.star_html | safe }} ({{ anime.score}}) </p>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+<!-- Genre Sections -->
+<div id="genreSections" class="section">
+    <!-- Genre sections will be dynamically added here -->
+    
+    <hr>
+
+</div>
+
+<button id="moreGenresBtn" class="more-btn" onclick="handlePagination('next')">More Genres</button>
+
+<br>
+
+{% endblock %}
+
+{% block endbody %}
+<script>
+    // Get the URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // Get the value of the 'genre' parameter
+    const genre = urlParams.get('genre');
+
+    // Now you have the genre value, you can use it as needed in your JavaScript code
+    console.log('Genre:', genre);
+    let currentPage = 1;
+
+    // Function to fetch anime by genre for the current page
+    async function fetchAnimeByGenre(page) {
+        const response = await fetch(`/fetch_genre?genre=${genre}&page=${page}`);
+        const data = await response.json();
+
+        console.log(data)
+        if (data.message == 'end') {
+            document.querySelector("#moreGenresBtn").style.display = "none";
+        }
+        return data.anime_by_genre;
+    }
+
+    function displayAnimeByGenre(animeByGenre) {
+        const genreSectionsContainer = document.getElementById('genreSections');
+
+        const genreSection = document.querySelector(".section");
+
+        const rowWrap = document.querySelector(".rowwrap");
+
+        animeByGenre.forEach(anime => {
+            const colDiv = document.createElement('div');
+            colDiv.classList.add('col-md-2', 'fadeInUp');
+
+            const animeLink = document.createElement('a');
+            animeLink.href = `/anime?uid=${anime.uid}`;
+            animeLink.classList.add('btn', 'btn-link', 'anime-card');
+
+            const animeImage = document.createElement('img');
+            animeImage.src = anime.img_url;
+            animeImage.classList.add('img-fluid');
+
+            const titleParagraph = document.createElement('p');
+            titleParagraph.classList.add('text-center');
+            titleParagraph.textContent = anime.title;
+
+            const ratingParagraph = document.createElement('p');
+            ratingParagraph.classList.add('text-center', 'anime-card');
+            ratingParagraph.innerHTML = `${anime.star_html} (${anime.score})`;
+
+            animeLink.appendChild(animeImage);
+            animeLink.appendChild(titleParagraph);
+            animeLink.appendChild(ratingParagraph);
+
+            colDiv.appendChild(animeLink);
+            rowWrap.appendChild(colDiv);
+        });
+
+        genreSection.appendChild(rowWrap);
+        //genreSectionsContainer.appendChild(genreSection);
+    }
+
+
+
+    // Function to handle pagination
+    async function handlePagination(direction) {
+        if (direction === 'prev' && currentPage > 1) {
+            currentPage--;
+        } else if (direction === 'next') {
+            currentPage++;
+        }
+
+        const animeByGenre = await fetchAnimeByGenre(currentPage);
+        displayAnimeByGenre(animeByGenre);
+    }
+
+
+
+    // Initial fetch and display
+    window.onload = async function () {
+
+        //const animeByGenre = await fetchAnimeByGenre(genre, currentPage);
+        //displayAnimeByGenre(animeByGenre);
+    };
+</script>
+{% endblock %}
